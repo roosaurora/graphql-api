@@ -5,8 +5,9 @@
   "description": "React Finland GraphQL API",
   "main": "./build/server",
   "scripts": {
-    "generate:all": "npm run generate:indices",
+    "generate:all": "npm run generate:indices && npm run generate:types",
     "generate:indices": "node utils/generate-indices.js content --verbose",
+    "generate:types": "node utils/generate-types.js server/routes/components server/routes/templates --verbose",
     "generate:reason-conf": "node utils/generate-reason-conf.js",
     "generate:typeof": "node utils/generate-typeof.js",
     "build": "npm run generate:all && rimraf build && tsc",
@@ -64,6 +65,7 @@
     "url": "https://github.com/ReactFinland/graphql-api/issues"
   },
   "dependencies": {
+    "@bebraw/extract-react-types": "^0.16.0",
     "@emotion/core": "^10.0.10",
     "@emotion/styled": "^10.0.10",
     "bent": "^1.4.0",
@@ -118,8 +120,7 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "npm run lint && npm run build",
-      "precommit": "lint-staged"
+      "pre-commit": "npm run lint && npm run build && lint-staged"
     }
   },
   "lint-staged": {

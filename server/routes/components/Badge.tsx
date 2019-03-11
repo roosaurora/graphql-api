@@ -5,7 +5,6 @@ import get from "lodash/get";
 import trimStart from "lodash/trimStart";
 import * as React from "react";
 import { Contact, ContactType } from "../../schema/Contact";
-import { Theme } from "../../schema/Theme";
 import Card from "../components/Card";
 
 interface BadgeContainerProps {
@@ -138,7 +137,7 @@ const BadgeType = styled.h3`
 
 interface BadgeProps {
   defaultColor: Color;
-  logo: Theme["logos"]["white"]["withText"]["url"];
+  logo: string; // TODO: Use Url type here
   attendee: Contact;
   texture: string;
   height: HeightProperty<string>;

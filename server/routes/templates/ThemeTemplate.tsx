@@ -1,5 +1,5 @@
 import styled from "@emotion/styled";
-import { Color } from "csstype";
+import * as CSS from "csstype";
 import map from "lodash/map";
 import complement from "polished/lib/color/complement";
 import invert from "polished/lib/color/invert";
@@ -57,9 +57,9 @@ const ColorHeader = styled.h2`
 `;
 
 interface ColorProps {
-  color: Color;
+  color: CSS.Color;
 }
-const Color = styled.div`
+const ColorSwatch = styled.div`
   padding: 1em;
   display: inline-block;
   width: 8em;
@@ -88,7 +88,7 @@ const LogoContainer = styled.section`
   vertical-align: top;
   font-style: italic;
 `;
-const Logo = styled.img`
+const LogoSwatch = styled.img`
   max-width: 8em;
   max-height: 8em;
   background-color: ${({ property }: LogoProps) =>
@@ -133,9 +133,9 @@ function ThemeTemplate({ id, theme }: ThemeTemplateProps) {
       <ColorsContainer>
         <ColorHeader>Colors</ColorHeader>
         {map(theme.colors, (color, colorProperty) => (
-          <Color color={color} key={color}>
+          <ColorSwatch color={color} key={color}>
             {colorProperty}
-          </Color>
+          </ColorSwatch>
         ))}
       </ColorsContainer>
       <LogosContainer>
@@ -147,7 +147,11 @@ function ThemeTemplate({ id, theme }: ThemeTemplateProps) {
             return (
               <LogoContainer key={property}>
                 <LogoLabel>{property}</LogoLabel>
-                <Logo property={logoProperty} src={image.url} alt={property} />
+                <LogoSwatch
+                  property={logoProperty}
+                  src={image.url}
+                  alt={property}
+                />
               </LogoContainer>
             );
           })

@@ -1,7 +1,7 @@
 import styled from "@emotion/styled";
 import { Color } from "csstype";
 import hexToRgba from "hex-to-rgba";
-import get from "lodash/get";
+// import get from "lodash/get";
 import desaturate from "polished/lib/color/desaturate";
 import * as React from "react";
 import { Interval } from "../../schema/Interval";
@@ -9,8 +9,8 @@ import { Theme } from "../../schema/Theme";
 import connect from "../components/connect";
 import Schedule from "../components/Schedule";
 import Sponsors from "../components/Sponsors";
-import { dayToFinnishLocale } from "../date-utils";
-import scheduleQuery from "../queries/scheduleQuery";
+// import { dayToFinnishLocale } from "../date-utils";
+// import scheduleQuery from "../queries/scheduleQuery";
 import sponsorQuery from "../queries/sponsorQuery";
 interface SchedulePageContainerProps {
   id: string;
@@ -68,11 +68,14 @@ const ScheduleContentContainer = styled.div`
   z-index: 1;
 `;
 
+// TODO: Add context (needed for introspection)
 interface ScheduleTemplateProps {
-  intervals?: Interval[];
   theme: Theme;
-  day: string;
-  conferenceId: string;
+  schedule: {
+    intervals?: Interval[];
+    day: string;
+    conferenceId: string;
+  };
   id: string;
 }
 
@@ -80,17 +83,17 @@ const ScheduleFooterContainer = styled.section`
   margin-top: -0.5cm;
 `;
 
+// TODO: Use through `connected`
 const ConnectedSponsors = connect(
   "/graphql",
   sponsorQuery,
   ({ conferenceId }) => ({ conferenceId })
 )(({ conference }) => <Sponsors {...conference} />);
 
+// TODO: Use `Schedule` through `connected`?
 function ScheduleTemplate({
-  intervals,
   theme,
-  day,
-  conferenceId,
+  schedule: { intervals, day, conferenceId },
   id,
 }: ScheduleTemplateProps) {
   return (
@@ -116,6 +119,29 @@ function ScheduleTemplate({
   );
 }
 
+export default ScheduleTemplate;
+
+/*
+export default connected(ScheduleTemplate)
+
+Push theme to React context or just pass through like id?
+
+{
+  theme,
+  context: {
+    conferenceId,
+    day,
+  },
+  schedule: {
+    intervals,
+    day,
+    conferenceId,
+    id
+  }
+}
+*/
+
+/*
 const ConnectedScheduleTemplate = connect(
   "/graphql",
   scheduleQuery,
@@ -124,10 +150,13 @@ const ConnectedScheduleTemplate = connect(
 )(({ schedule, theme, conferenceId, id }) => (
   <ScheduleTemplate
     id={id}
+    schedule={{
+      intervals: get(schedule, "intervals"),
+      theme,
+      day: dayToFinnishLocale(get(schedule, "day")),
+      conferenceId,
+    }}
     theme={theme}
-    day={schedule && dayToFinnishLocale(schedule.day)}
-    conferenceId={conferenceId}
-    intervals={get(schedule, "intervals")}
   />
 ));
 
@@ -175,3 +204,4 @@ ConnectedScheduleTemplate.variables = [
 ];
 
 export default ConnectedScheduleTemplate;
+*/

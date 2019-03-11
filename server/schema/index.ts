@@ -18,6 +18,6 @@ export default async function generateSchema() {
     resolvers: Object.values(resolvers),
     // scalarsMap: [{ type: Url, scalar: UrlScalar }],
     // TODO: Emitting the schema could be useful for query checks.
-    // emitSchemaFile: true, // use path for a specific location
+    emitSchemaFile: "server/types/schema.gql",
   });
 }
