@@ -1,5 +1,6 @@
 // import extractReactTypes from "extract-react-types";
 import { request } from "graphql-request";
+import get from "lodash/get";
 import isEqual from "lodash/isEqual";
 import * as React from "react";
 import componentTypes from "../../types/component-types";
@@ -18,7 +19,12 @@ function connected(component) {
     data: {};
   }
 
-  const componentProps = componentTypes[component.name];
+  const componentProps = get(
+    componentTypes[component.name],
+    "component.value.members",
+    []
+  );
+  // TODO: map based on key.theme to queries from schemaTypes
 
   console.log("component", component.name, componentProps);
 

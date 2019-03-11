@@ -20,7 +20,9 @@ async function main() {
     descriptions: true,
   });
 
-  const code = `const introspection = ${JSON.stringify(introspection)};
+  const code = `const introspection = ${JSON.stringify(
+    introspection.__schema.types
+  )};
 export default introspection;`;
 
   // TODO: Extract output file as a parameter. Also get cwd from process or argv.
