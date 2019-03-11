@@ -1,5 +1,6 @@
 const fs = require("fs-extra");
 const prettier = require("prettier");
+const fromPairs = require("lodash/fromPairs");
 const { buildSchema, introspectionFromSchema } = require("graphql");
 const mri = require("mri");
 const argv = process.argv.slice(2);
@@ -16,13 +17,15 @@ async function main() {
   const schema = await fs.readFile("./server/types/schema.gql", {
     encoding: "utf8",
   });
-  const introspection = introspectionFromSchema(buildSchema(schema), {
-    descriptions: true,
-  });
+  const introspection = fromPairs(
+    introspectionFromSchema(buildSchema(schema), {
+      descriptions: true,
+    }).__schema.types.map(type => {
+      return [type.name, type];
+    })
+  );
 
-  const code = `const introspection = ${JSON.stringify(
-    introspection.__schema.types
-  )};
+  const code = `const introspection = ${JSON.stringify(introspection)};
 export default introspection;`;
 
   // TODO: Extract output file as a parameter. Also get cwd from process or argv.

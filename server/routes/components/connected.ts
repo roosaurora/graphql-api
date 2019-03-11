@@ -6,11 +6,7 @@ import * as React from "react";
 import componentTypes from "../../types/component-types";
 import schemaTypes from "../../types/schema";
 
-// Load components/templates into a lookup
-// TODO: Move this to some init phase that also sets up endpoint
-// How can this work in the browser?
-
-console.log(componentTypes, schemaTypes);
+const schemaQueries = schemaTypes.Query;
 
 function connected(component) {
   let queryCache = {};
@@ -26,7 +22,7 @@ function connected(component) {
   );
   // TODO: map based on key.theme to queries from schemaTypes
 
-  console.log("component", component.name, componentProps);
+  console.log("component", component.name, componentProps, schemaQueries);
 
   // 1. Figure out query based on componentProps and schemaTypes
   // 2. Construct query using a fork of https://github.com/Kmaschta/graphql-ast-types
