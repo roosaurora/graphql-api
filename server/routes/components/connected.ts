@@ -71,10 +71,22 @@ function connected(component) {
         this.props
       );
 
+      // 1. Figure out which queries to perform based on available data
+      // 2. Generate structure + populate using props as variables
+      // 3. Request
+      // 4. Aggregate results with Promise.all
+
       // TODO: map based on key.theme to queries from schemaTypes
 
-      // 1. Figure out query based on componentProps and schemaTypes
-      // 2. Construct query using https://github.com/atulmy/gql-query-builder
+      // https://github.com/atulmy/gql-query-builder
+      /*
+      const query = queryBuilder({
+        type: 'query',
+        operation: 'thoughts', // match against schema queries based on props
+        fields: ['id', 'name', 'thought'],  // from type def?
+        variables: {} // from props
+      })
+      */
 
       return request(endpoint, query, variables)
         .then(data => {
