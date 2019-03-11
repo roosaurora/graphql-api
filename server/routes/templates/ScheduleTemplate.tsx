@@ -93,7 +93,12 @@ const ConnectedSponsors = connect(
 // TODO: Use `Schedule` through `connected`?
 function ScheduleTemplate({
   theme,
-  schedule: { intervals, day, conferenceId },
+  // TODO: Drop defaults from here
+  schedule: { intervals, day, conferenceId } = {
+    intervals: [],
+    day: "",
+    conferenceId: "",
+  },
   id,
 }: ScheduleTemplateProps) {
   return (
@@ -118,6 +123,9 @@ function ScheduleTemplate({
     </ScheduleTemplateContainer>
   );
 }
+
+// TODO: Eliminate this hint. Now just for testing connector
+ScheduleTemplate.connect = true;
 
 export default ScheduleTemplate;
 

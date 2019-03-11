@@ -2,10 +2,14 @@
 import { request } from "graphql-request";
 import isEqual from "lodash/isEqual";
 import * as React from "react";
+import componentTypes from "../../types/component-types";
+import schemaTypes from "../../types/schema";
 
 // Load components/templates into a lookup
 // TODO: Move this to some init phase that also sets up endpoint
 // How can this work in the browser?
+
+console.log(componentTypes, schemaTypes);
 
 function connected(component) {
   let queryCache = {};
@@ -14,8 +18,12 @@ function connected(component) {
     data: {};
   }
 
-  // TODO: Perform a lookup against extracted type info now
-  console.log("component", component, component.name);
+  const componentProps = componentTypes[component.name];
+
+  console.log("component", component.name, componentProps);
+
+  // 1. Figure out query based on componentProps and schemaTypes
+  // 2. Construct query using a fork of https://github.com/Kmaschta/graphql-ast-types
 
   class Connect<P = {}> extends React.Component<P, ConnectState> {
     public static filename: string;
