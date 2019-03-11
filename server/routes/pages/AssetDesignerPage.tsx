@@ -289,10 +289,6 @@ function AssetDesignerSidebar({
       }))
     : []; // TODO: Overlay to selection
 
-  if (selection.propTypeAST) {
-    console.log("got prop types", selection.propTypeAST);
-  }
-
   return (
     <Sidebar backgroundColor={theme ? theme.colors.background : ""}>
       <SidebarHeader>Asset designer</SidebarHeader>
@@ -370,8 +366,12 @@ function AssetDesignerSidebar({
 
           {selection.propTypeAST
             ? map(getFields(selection.propTypeAST), prop => (
-                <VariableContainer key={prop.key.name}>
-                  {prop.value.kind}
+                <VariableContainer key={prop.field}>
+                  <GraphQLVariableSelector
+                    prop={prop}
+                    selected={variables[prop.field]}
+                    onChange={onUpdateVariable}
+                  />
                 </VariableContainer>
               ))
             : map(variableOptions, variable => (
@@ -402,13 +402,15 @@ function getFields(propTypeAST) {
         ({ name }) => name === propType.key.name
       );
 
-      // TODO: Convert to the same format
       if (matchingSchemaQueryField) {
-        console.log("got match", matchingSchemaQueryField.args);
         return convertGraphQLArgsToTypeScriptAST(matchingSchemaQueryField.args);
       }
 
-      return propType;
+      return {
+        field: propType.key.name,
+        optional: propType.optional,
+        type: propType.value.kind,
+      };
     }),
     isEqual
   );
@@ -417,19 +419,43 @@ function getFields(propTypeAST) {
 }
 
 function convertGraphQLArgsToTypeScriptAST(args) {
-  return args.map(arg => {
-    return {
-      key: {
-        kind: "id",
-        name: arg.name,
-      },
-      kind: "property",
-      optional: arg.type.kind !== "NON_NULL",
-      value: {
-        kind: arg.type.ofType.name.toLowerCase(),
-      },
-    };
-  });
+  return args.map(arg => ({
+    field: arg.name,
+    optional: arg.type.kind !== "NON_NULL",
+    type: arg.type.ofType.name.toLowerCase(),
+  }));
+}
+
+const SelectorLabel = styled.label`
+  margin-right: 1em;
+`;
+const SelectorInput = styled.input`
+  width: 100%;
+`;
+const SelectorContainer = styled.div`
+  display: grid;
+  grid-template-columns: 0.75fr 1.25fr;
+`;
+
+function GraphQLVariableSelector({ prop, selected, onChange }) {
+  console.log("prop", prop);
+  if (prop.type === "string" || prop.type === "id") {
+    return (
+      <SelectorContainer>
+        <SelectorLabel>{prop.field}</SelectorLabel>
+        <SelectorInput
+          type="text"
+          defaultValue={selected}
+          onChange={({ target: { value } }) => {
+            onChange(prop.field, value);
+          }}
+        />
+      </SelectorContainer>
+    );
+  }
+
+  // TODO: Not implemented yet!
+  return <div>{prop.field}</div>;
 }
 
 interface ThemeSelectorProps {
