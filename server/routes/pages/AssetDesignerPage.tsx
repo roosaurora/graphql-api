@@ -169,13 +169,13 @@ function AssetDesignerPage({
   const theme = themes.find(({ id }) => id === state.themeId) || themes[0];
   const { selectionId, showSidebar } = state;
 
-  const selection = getSelection(selectionId) || NoSelectionFound;
+  let selection = getSelection(selectionId) || NoSelectionFound;
   const sideBarWidth = showSidebar ? "18em" : 0;
   const assetDesignTemplateId = "asset-design-template-id";
 
+  // TODO: Eliminate the flag, this is only for testing
   if (selection.connect) {
-    // TODO: Apply connector now
-    console.log("connecting to ", selection.name, connected(selection));
+    selection = connected(selection);
   }
 
   return (
@@ -285,6 +285,10 @@ function AssetDesignerSidebar({
       }))
     : []; // TODO: Overlay to selection
 
+  if (selection.propTypeAST) {
+    console.log("got prop types", selection.propTypeAST);
+  }
+
   return (
     <Sidebar backgroundColor={theme ? theme.colors.background : ""}>
       <SidebarHeader>Asset designer</SidebarHeader>
@@ -356,24 +360,30 @@ function AssetDesignerSidebar({
         />
       </SidebarItem>
 
-      {variableOptions.length > 0 && (
+      {(selection.propTypeAST.length > 0 || variableOptions.length > 0) && (
         <SidebarItem>
           <SidebarHeader>Variables</SidebarHeader>
 
-          {map(variableOptions, variable => (
-            <VariableContainer key={variable.id}>
-              <VariableSelector
-                variables={variables}
-                field={variable.id}
-                selectedVariable={get(variable, "value")}
-                query={variable.query}
-                mapToCollection={variable.mapToCollection}
-                mapToOption={variable.mapToOption}
-                validation={variable.validation}
-                onChange={onUpdateVariable}
-              />
-            </VariableContainer>
-          ))}
+          {selection.propTypeAST
+            ? map(selection.propTypeAST, prop => (
+                <VariableContainer key={prop.key.name}>
+                  {prop.value.kind}
+                </VariableContainer>
+              ))
+            : map(variableOptions, variable => (
+                <VariableContainer key={variable.id}>
+                  <VariableSelector
+                    variables={variables}
+                    field={variable.id}
+                    selectedVariable={get(variable, "value")}
+                    query={variable.query}
+                    mapToCollection={variable.mapToCollection}
+                    mapToOption={variable.mapToOption}
+                    validation={variable.validation}
+                    onChange={onUpdateVariable}
+                  />
+                </VariableContainer>
+              ))}
         </SidebarItem>
       )}
     </Sidebar>

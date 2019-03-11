@@ -15,19 +15,14 @@ function connected(component) {
     data: {};
   }
 
-  const componentProps = get(
+  const componentPropTypeAST = get(
     componentTypes[component.name],
     "component.value.members",
     []
   );
-  // TODO: map based on key.theme to queries from schemaTypes
-
-  console.log("component", component.name, componentProps, schemaQueries);
-
-  // 1. Figure out query based on componentProps and schemaTypes
-  // 2. Construct query using a fork of https://github.com/Kmaschta/graphql-ast-types
 
   class Connect<P = {}> extends React.Component<P, ConnectState> {
+    public static propTypeAST: unknown; // TODO: Figure out the exact type
     public static filename: string;
     public static variables: Array<{
       id: string;
@@ -68,6 +63,19 @@ function connected(component) {
       const query = ``;
       const variables = {};
 
+      console.log(
+        "fetch data for",
+        component.name,
+        componentPropTypeAST,
+        schemaQueries,
+        this.props
+      );
+
+      // TODO: map based on key.theme to queries from schemaTypes
+
+      // 1. Figure out query based on componentProps and schemaTypes
+      // 2. Construct query using https://github.com/atulmy/gql-query-builder
+
       return request(endpoint, query, variables)
         .then(data => {
           queryCache = data;
@@ -77,6 +85,8 @@ function connected(component) {
         .catch(err => console.error(err));
     }
   }
+
+  Connect.propTypeAST = componentPropTypeAST;
 
   return Connect;
 }
