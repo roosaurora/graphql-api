@@ -1,6 +1,7 @@
 const fs = require("fs-extra");
 const path = require("path");
 const glob = require("glob");
+const prettier = require("prettier");
 const extractReactTypes = require("@bebraw/extract-react-types");
 const flatMap = require("lodash/flatMap");
 const fromPairs = require("lodash/fromPairs");
@@ -33,13 +34,13 @@ async function main() {
       ];
     })
   );
-  const code = `const componentTypes = ${JSON.stringify(result, null, 2)};
+  const code = `const componentTypes = ${JSON.stringify(result)};
 export default componentTypes;`;
 
   // TODO: Extract output directory as a parameter. Also get cwd from process or argv.
   await fs.writeFile(
     path.join(__dirname, "../server/types/component-types.ts"),
-    code
+    prettier.format(code, { parser: "typescript" })
   );
 }
 
