@@ -2,14 +2,18 @@ import styled from "@emotion/styled";
 import { Color, WidthProperty } from "csstype";
 import { saveAs } from "file-saver";
 import { createBrowserHistory as createHistory } from "history";
+import flatMap = require("lodash/flatMap");
 import fromPairs from "lodash/fromPairs";
 import get from "lodash/get";
+import isEqual from "lodash/isEqual";
 import map from "lodash/map";
 import set from "lodash/set";
+import uniqWith from "lodash/uniqWith";
 import queryString from "query-string";
 import * as React from "react";
 import domToImage from "retina-dom-to-image";
 import { Theme } from "../../schema/Theme";
+import schemaTypes from "../../types/schema";
 import * as components from "../components";
 import connect from "../components/connect";
 import connected from "../components/connected";
@@ -365,7 +369,7 @@ function AssetDesignerSidebar({
           <SidebarHeader>Variables</SidebarHeader>
 
           {selection.propTypeAST
-            ? map(selection.propTypeAST, prop => (
+            ? map(getFields(selection.propTypeAST), prop => (
                 <VariableContainer key={prop.key.name}>
                   {prop.value.kind}
                 </VariableContainer>
@@ -388,6 +392,44 @@ function AssetDesignerSidebar({
       )}
     </Sidebar>
   );
+}
+
+function getFields(propTypeAST) {
+  const schemaQueryFields = schemaTypes.Query.fields;
+  const expandedFields = uniqWith(
+    flatMap(propTypeAST, propType => {
+      const matchingSchemaQueryField = schemaQueryFields.find(
+        ({ name }) => name === propType.key.name
+      );
+
+      // TODO: Convert to the same format
+      if (matchingSchemaQueryField) {
+        console.log("got match", matchingSchemaQueryField.args);
+        return convertGraphQLArgsToTypeScriptAST(matchingSchemaQueryField.args);
+      }
+
+      return propType;
+    }),
+    isEqual
+  );
+
+  return expandedFields;
+}
+
+function convertGraphQLArgsToTypeScriptAST(args) {
+  return args.map(arg => {
+    return {
+      key: {
+        kind: "id",
+        name: arg.name,
+      },
+      kind: "property",
+      optional: arg.type.kind !== "NON_NULL",
+      value: {
+        kind: arg.type.ofType.name.toLowerCase(),
+      },
+    };
+  });
 }
 
 interface ThemeSelectorProps {
