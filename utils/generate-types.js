@@ -39,8 +39,8 @@ export default componentTypes;`;
 
   // TODO: Extract output directory as a parameter. Also get cwd from process or argv.
   await fs.writeFile(
-    path.join(__dirname, "../server/types/component-types.ts"),
-    prettier.format(code, { parser: "typescript" })
+    "./server/types/component-types.ts",
+    prettier.format(code, JSON.parse(await fs.readFile("./.prettierrc")))
   );
 }
 

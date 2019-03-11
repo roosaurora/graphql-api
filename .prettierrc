@@ -1,3 +1,4 @@
 {
+  "parser": "typescript",
   "trailingComma": "es5"
 }
