@@ -7,7 +7,7 @@
   "scripts": {
     "generate:all": "npm run generate:indices && npm run generate:types && npm run generate:introspection",
     "generate:indices": "node utils/generate-indices.js content --verbose",
-    "generate:introspection": "gql-gen",
+    "generate:introspection": "node utils/generate-introspection.js --verbose",
     "generate:types": "node utils/generate-types.js server/routes/components server/routes/templates --verbose",
     "generate:reason-conf": "node utils/generate-reason-conf.js",
     "generate:typeof": "node utils/generate-typeof.js",
@@ -89,8 +89,6 @@
     "fuse-box": "^3.7.1",
     "googleapis": "^38.0.0",
     "graphql": "^14.2.1",
-    "graphql-code-generator": "^0.18.0",
-    "graphql-codegen-introspection": "^0.18.0",
     "graphql-request": "^1.8.2",
     "helmet": "^3.16.0",
     "hex-to-rgba": "^1.0.2",
