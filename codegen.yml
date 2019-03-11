@@ -1,0 +1,5 @@
+schema: server/types/schema.gql
+overwrite: true
+generates:
+  server/types/schema.json:
+    - introspection
