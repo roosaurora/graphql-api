@@ -68,23 +68,31 @@ function connected(component) {
       const endpoint = "/graphql";
       const propNames = map(componentPropTypeAST, ({ key: { name } }) => name);
       const queries = schemaQueries.fields;
-      const matchingQueries = filter(queries, query =>
-        propNames.find(name => query.name === name)
+      const matchingQueries = filter(
+        queries,
+        query => propNames.find(name => query.name === name && name !== "theme") // TODO: Remove theme hack
       ) as typeof queries;
+
+      console.log("matching queries", matchingQueries);
 
       // TODO: Figure out how to deal with variable types (introspect from schema)
       // TODO: Figure out how to deal with the theme + figure out the exact shape for the query
       const operations = map(matchingQueries, query => ({
         operation: query.name,
-        variables: getOperationVariables(omit(this.props, "id")), // TODO: remove the id hack
-        fields: getOperationFields(componentPropTypeAST, query.name), // Connect with TS
+        variables: getOperationVariables(omit(this.props, ["id", "theme"])), // TODO: remove the omit hack
+        fields: getOperationFields(componentPropTypeAST, query.name),
       }));
 
-      console.log("operations", operations);
+      console.log(
+        "operations",
+        operations,
+        "prop type ast",
+        componentPropTypeAST
+      );
 
       const gqlQuery = gql.query(operations);
 
-      console.log("query", gqlQuery);
+      console.log("query", gqlQuery.query);
 
       return request(endpoint, gqlQuery.query, gqlQuery.variables)
         .then(data => {
