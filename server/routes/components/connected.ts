@@ -76,6 +76,8 @@ function connected(component) {
       console.log("matching queries", matchingQueries);
 
       // TODO: Figure out how to deal with variable types (introspect from schema)
+      // object values have value.value.name (if value.kind is generic) that gives string (TS class + field)
+      // that field can then be used for figuring out the fields
       // TODO: Figure out how to deal with the theme + figure out the exact shape for the query
       const operations = map(matchingQueries, query => ({
         operation: query.name,

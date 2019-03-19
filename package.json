@@ -66,10 +66,9 @@
     "url": "https://github.com/ReactFinland/graphql-api/issues"
   },
   "dependencies": {
-    "@bebraw/extract-react-types": "^0.16.0",
+    "@bebraw/extract-react-types": "^0.16.1",
     "@emotion/core": "^10.0.10",
     "@emotion/styled": "^10.0.10",
-    "bent": "^1.4.0",
     "body-parser": "^1.18.3",
     "cloudinary": "^1.14.0",
     "compression": "^1.7.4",
