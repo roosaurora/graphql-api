@@ -1,10 +1,16 @@
-// import extractReactTypes from "extract-react-types";
 import { request } from "graphql-request";
+import filter from "lodash/filter";
 import get from "lodash/get";
 import isEqual from "lodash/isEqual";
+import isObject from "lodash/isObject";
+import map from "lodash/map";
+import mapValues from "lodash/mapValues";
+import omit from "lodash/omit";
+import pickBy from "lodash/pickBy";
 import * as React from "react";
 import componentTypes from "../../types/component-types";
 import schemaTypes from "../../types/schema";
+import * as gql from "./gql-query-builder";
 
 const schemaQueries = schemaTypes.Query;
 
@@ -60,35 +66,27 @@ function connected(component) {
     }
     public fetchData() {
       const endpoint = "/graphql";
-      const query = ``;
-      const variables = {};
+      const propNames = map(componentPropTypeAST, ({ key: { name } }) => name);
+      const queries = schemaQueries.fields;
+      const matchingQueries = filter(queries, query =>
+        propNames.find(name => query.name === name)
+      ) as typeof queries;
 
-      console.log(
-        "fetch data for",
-        component.name,
-        componentPropTypeAST,
-        schemaQueries,
-        this.props
-      );
+      // TODO: Figure out how to deal with variable types (introspect from schema)
+      // TODO: Figure out how to deal with the theme + figure out the exact shape for the query
+      const operations = map(matchingQueries, query => ({
+        operation: query.name,
+        variables: getOperationVariables(omit(this.props, "id")), // TODO: remove the id hack
+        fields: getOperationFields(componentPropTypeAST, query.name), // Connect with TS
+      }));
 
-      // 1. Figure out which queries to perform based on available data
-      // 2. Generate structure + populate using props as variables
-      // 3. Request
-      // 4. Aggregate results with Promise.all
+      console.log("operations", operations);
 
-      // TODO: map based on key.theme to queries from schemaTypes
+      const gqlQuery = gql.query(operations);
 
-      // https://github.com/atulmy/gql-query-builder
-      /*
-      const query = queryBuilder({
-        type: 'query',
-        operation: 'thoughts', // match against schema queries based on props
-        fields: ['id', 'name', 'thought'],  // from type def?
-        variables: {} // from props
-      })
-      */
+      console.log("query", gqlQuery);
 
-      return request(endpoint, query, variables)
+      return request(endpoint, gqlQuery.query, gqlQuery.variables)
         .then(data => {
           queryCache = data;
 
@@ -101,6 +99,32 @@ function connected(component) {
   Connect.propTypeAST = componentPropTypeAST;
 
   return Connect;
+}
+
+function getOperationVariables(props) {
+  return mapValues(pickBy(props, prop => !isObject(prop)), value => ({
+    value,
+  }));
+}
+
+function getOperationFields(componentAST, queryName) {
+  const matchingComponent = componentAST.find(
+    ({ key: { name } }) => name === queryName
+  );
+
+  if (!matchingComponent) {
+    return [];
+  }
+
+  if (matchingComponent.value.members) {
+    return matchingComponent.value.members.map(member => member.key.name);
+  }
+
+  if (matchingComponent.value.value) {
+    return matchingComponent.value.value.name.kind;
+  }
+
+  return [];
 }
 
 export default connected;
