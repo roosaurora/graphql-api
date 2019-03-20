@@ -173,20 +173,54 @@ function getOperationFields(componentAST, queryName, schemaTypes) {
   return [];
 }
 
-function parseTypeFields(matchingField, memberName) {
-  if (matchingField.type.ofType.kind === "SCALAR") {
-    return memberName;
-  } else if (matchingField.type.ofType.kind === "LIST") {
-    const listType = matchingField.type.ofType.ofType.ofType.name;
-    const matchingListType = schemaTypes[listType] || {};
-    const fieldNames = map(matchingListType.fields, property("name"));
-
-    // TODO: Expand each field (recurse)
-
-    return { [memberName]: fieldNames };
+function parseTypeFields(matchingField, memberName, i = 0) {
+  // Max. recursion levels.
+  // TODO: What's the right way to deal with this?
+  if (i === 3) {
+    return "";
   }
 
-  console.warn(`Unknown type for ${memberName}`);
+  if (
+    get(matchingField, "type.kind") === "ENUM" ||
+    get(matchingField, "type.kind") === "SCALAR" ||
+    get(matchingField, "type.ofType.kind") === "ENUM" ||
+    get(matchingField, "type.ofType.kind") === "SCALAR"
+  ) {
+    return memberName;
+  } else if (
+    get(matchingField, "type.kind") === "LIST" ||
+    get(matchingField, "type.ofType.kind") === "LIST"
+  ) {
+    const listType =
+      matchingField.type.ofType.ofType.name ||
+      matchingField.type.ofType.ofType.ofType.name;
+    const matchingListType = schemaTypes[listType] || {};
+    const matchingFields = filter(
+      map(matchingListType.fields, field =>
+        parseTypeFields(field, field.name, i + 1)
+      ),
+      Boolean
+    );
+
+    if (matchingFields.length > 0) {
+      return {
+        [memberName]: matchingFields,
+      };
+    }
+
+    return memberName;
+  } else if (
+    get(matchingField, "type.kind") === "OBJECT" ||
+    get(matchingField, "type.ofType.kind") === "OBJECT"
+  ) {
+    const objectType =
+      matchingField.type.name || matchingField.type.ofType.name;
+    const matchingObjectType = schemaTypes[objectType] || {};
+
+    return {
+      [memberName]: map(matchingObjectType.fields, property("name")),
+    };
+  }
 
   return memberName;
 }
