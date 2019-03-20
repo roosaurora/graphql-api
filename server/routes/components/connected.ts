@@ -7,6 +7,7 @@ import map from "lodash/map";
 import mapValues from "lodash/mapValues";
 import omit from "lodash/omit";
 import pickBy from "lodash/pickBy";
+import property from "lodash/property";
 import * as React from "react";
 import componentTypes from "../../types/component-types";
 import schemaTypes from "../../types/schema";
@@ -85,7 +86,11 @@ function connected(component) {
           query,
           omit(this.props, ["id", "theme"])
         ), // TODO: remove the omit hack
-        fields: getOperationFields(componentPropTypeAST, query.name),
+        fields: getOperationFields(
+          componentPropTypeAST,
+          query.name,
+          schemaTypes
+        ),
       }));
 
       console.log(
@@ -134,7 +139,7 @@ function getOperationVariables(query, props) {
   });
 }
 
-function getOperationFields(componentAST, queryName) {
+function getOperationFields(componentAST, queryName, schemaTypes) {
   const matchingComponent = componentAST.find(
     ({ key: { name } }) => name === queryName
   );
@@ -144,7 +149,38 @@ function getOperationFields(componentAST, queryName) {
   }
 
   if (matchingComponent.value.members) {
-    return matchingComponent.value.members.map(member => member.key.name);
+    return matchingComponent.value.members.map(member => {
+      const valuesType = member.value.value.name;
+      // TODO: Likely this is brittle and a more specific check is required
+      const parts = valuesType.split("['");
+      const typeName = parts[0];
+      const fieldName = parts[1].split("']")[0]; // TODO: Parse in a nicer way
+
+      // TODO: What if type doesn't match?
+      const matchingType = schemaTypes[typeName] || {};
+      const matchingField = (matchingType.fields || []).find(
+        ({ name }) => name === fieldName
+      );
+
+      if (matchingField.type.ofType.kind === "SCALAR") {
+        return member.key.name;
+      } else if (matchingField.type.ofType.kind === "LIST") {
+        const listType = matchingField.type.ofType.ofType.ofType.name;
+        const matchingListType = schemaTypes[listType] || {};
+        const fieldNames = map(matchingListType.fields, property("name"));
+
+        // TODO: Expand each field (recurse)
+        console.log("list type", listType, matchingListType, fieldNames);
+
+        return {
+          [member.key.name]: fieldNames,
+        };
+      }
+
+      console.warn(`Unknown type for ${member}`);
+
+      return member.key.name;
+    });
   }
 
   if (matchingComponent.value.value) {
