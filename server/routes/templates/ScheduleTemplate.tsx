@@ -90,7 +90,8 @@ const ConnectedSponsors = connect(
   ({ conferenceId }) => ({ conferenceId })
 )(({ conference }) => <Sponsors {...conference} />);
 
-// TODO: Use `Schedule` through `connected`?
+// TODO: 1. Refactor to ConnectedSchedule and remove intervals from direct data deps
+// TODO: 2. Use connected for Schedule as well
 function ScheduleTemplate({
   theme,
   // TODO: Drop defaults from here
