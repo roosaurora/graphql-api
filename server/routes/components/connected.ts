@@ -162,24 +162,7 @@ function getOperationFields(componentAST, queryName, schemaTypes) {
         ({ name }) => name === fieldName
       );
 
-      if (matchingField.type.ofType.kind === "SCALAR") {
-        return member.key.name;
-      } else if (matchingField.type.ofType.kind === "LIST") {
-        const listType = matchingField.type.ofType.ofType.ofType.name;
-        const matchingListType = schemaTypes[listType] || {};
-        const fieldNames = map(matchingListType.fields, property("name"));
-
-        // TODO: Expand each field (recurse)
-        console.log("list type", listType, matchingListType, fieldNames);
-
-        return {
-          [member.key.name]: fieldNames,
-        };
-      }
-
-      console.warn(`Unknown type for ${member}`);
-
-      return member.key.name;
+      return parseTypeFields(matchingField, member.key.name);
     });
   }
 
@@ -188,6 +171,24 @@ function getOperationFields(componentAST, queryName, schemaTypes) {
   }
 
   return [];
+}
+
+function parseTypeFields(matchingField, memberName) {
+  if (matchingField.type.ofType.kind === "SCALAR") {
+    return memberName;
+  } else if (matchingField.type.ofType.kind === "LIST") {
+    const listType = matchingField.type.ofType.ofType.ofType.name;
+    const matchingListType = schemaTypes[listType] || {};
+    const fieldNames = map(matchingListType.fields, property("name"));
+
+    // TODO: Expand each field (recurse)
+
+    return { [memberName]: fieldNames };
+  }
+
+  console.warn(`Unknown type for ${memberName}`);
+
+  return memberName;
 }
 
 export default connected;
