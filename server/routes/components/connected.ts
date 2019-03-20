@@ -174,9 +174,9 @@ function getOperationFields(componentAST, queryName, schemaTypes) {
 }
 
 function parseTypeFields(matchingField, memberName, i = 0) {
-  // Max. recursion levels.
+  // Max. recursion levels. Avoid getting stuck.
   // TODO: What's the right way to deal with this?
-  if (i === 3) {
+  if (i === 10) {
     return "";
   }
 
