@@ -81,7 +81,10 @@ function connected(component) {
       // TODO: Figure out how to deal with the theme + figure out the exact shape for the query
       const operations = map(matchingQueries, query => ({
         operation: query.name,
-        variables: getOperationVariables(omit(this.props, ["id", "theme"])), // TODO: remove the omit hack
+        variables: getOperationVariables(
+          query,
+          omit(this.props, ["id", "theme"])
+        ), // TODO: remove the omit hack
         fields: getOperationFields(componentPropTypeAST, query.name),
       }));
 
@@ -111,10 +114,24 @@ function connected(component) {
   return Connect;
 }
 
-function getOperationVariables(props) {
-  return mapValues(pickBy(props, prop => !isObject(prop)), value => ({
-    value,
-  }));
+function getOperationVariables(query, props) {
+  const args = query.args;
+
+  return mapValues(pickBy(props, prop => !isObject(prop)), (value, name) => {
+    const arg = args.find(arg => arg.name === name);
+
+    if (!arg) {
+      console.error(`${name} wasn't found in ${query}`);
+
+      return {};
+    }
+
+    return {
+      value,
+      required: arg.type.kind === "NON_NULL",
+      type: arg.type.ofType.name,
+    };
+  });
 }
 
 function getOperationFields(componentAST, queryName) {

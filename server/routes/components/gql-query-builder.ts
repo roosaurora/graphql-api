@@ -166,29 +166,7 @@ function queryVariablesMap(variables: any) {
 
 // Get GraphQL equivalent type of data passed (String, Int, Float, Boolean)
 function queryDataType(variable: any) {
-  let type = "String";
-
-  const value = typeof variable === "object" ? variable.value : variable;
-
-  switch (typeof value) {
-    case "object":
-      type = "Object";
-      break;
-
-    case "boolean":
-      type = "Boolean";
-      break;
-
-    case "number":
-      type = value % 1 === 0 ? "Int" : "Float";
-      break;
-  }
-
-  if (typeof variable === "object" && variable.required) {
-    type += "!";
-  }
-
-  return type;
+  return `${variable.type}${variable.required ? "!" : ""}`;
 }
 
 export { mutationOperation as mutation, queryOperation as query };
