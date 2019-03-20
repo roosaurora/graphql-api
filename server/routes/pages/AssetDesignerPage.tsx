@@ -5,7 +5,7 @@ import { createBrowserHistory as createHistory } from "history";
 import flatMap = require("lodash/flatMap");
 import fromPairs from "lodash/fromPairs";
 import get from "lodash/get";
-import isEqual from "lodash/isEqual";
+import isEqualWith from "lodash/isEqualWith";
 import map from "lodash/map";
 import set from "lodash/set";
 import uniqWith from "lodash/uniqWith";
@@ -413,7 +413,9 @@ function getFields(propTypeAST) {
         type: propType.value.kind,
       };
     }),
-    isEqual
+    // First field wins
+    // TODO: Types can be different for id so we cannot use regular isEqual here
+    (a, b) => isEqualWith(a, b, (a, b) => a.field === b.field)
   );
 
   return expandedFields;
@@ -438,8 +440,8 @@ const SelectorContainer = styled.div`
   grid-template-columns: 0.75fr 1.25fr;
 `;
 
+// TODO: Make this a lot nicer
 function GraphQLVariableSelector({ prop, selected, onChange }) {
-  console.log("prop", prop);
   if (prop.type === "string" || prop.type === "id") {
     return (
       <SelectorContainer>
