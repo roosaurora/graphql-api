@@ -74,8 +74,6 @@ function connected(component) {
         query => propNames.find(name => query.name === name && name !== "theme") // TODO: Remove theme hack
       ) as typeof queries;
 
-      console.log("matching queries", matchingQueries);
-
       // TODO: Figure out how to deal with variable types (introspect from schema)
       // object values have value.value.name (if value.kind is generic) that gives string (TS class + field)
       // that field can then be used for figuring out the fields
@@ -84,22 +82,14 @@ function connected(component) {
         operation: query.name,
         variables: getOperationVariables(query, omit(this.props, ["id"])), // TODO: remove the omit hack - id should be a ref
         fields: getOperationFields(
-          componentPropTypeAST,
-          query.name,
+          getMatchingComponent(componentPropTypeAST, query.name),
           schemaTypes
         ),
       }));
 
-      console.log(
-        "operations",
-        operations,
-        "prop type ast",
-        componentPropTypeAST
-      );
-
       const gqlQuery = gql.query(operations);
 
-      console.log("query", gqlQuery.query);
+      console.log(gqlQuery.query);
 
       return request(endpoint, gqlQuery.query, gqlQuery.variables)
         .then(data => {
@@ -123,7 +113,7 @@ function getOperationVariables(query, props) {
     const arg = args.find(arg => arg.name === name);
 
     if (!arg) {
-      console.error(`${name} wasn't found in ${query}`);
+      console.error(`${name} wasn't found in`, query);
 
       return {};
     }
@@ -136,36 +126,62 @@ function getOperationVariables(query, props) {
   });
 }
 
-function getOperationFields(componentAST, queryName, schemaTypes) {
+function getMatchingComponent(componentAST, queryName) {
   const matchingComponent = componentAST.find(
     ({ key: { name } }) => name === queryName
   );
 
   if (!matchingComponent) {
+    console.warn("No matching component found for fields");
+
     return [];
   }
 
-  if (matchingComponent.value.members) {
-    return matchingComponent.value.members.map(member => {
-      const valuesType = member.value.value.name;
-      // TODO: Likely this is brittle and a more specific check is required
-      const parts = valuesType.split("['");
-      const typeName = parts[0];
-      const fieldName = parts[1].split("']")[0]; // TODO: Parse in a nicer way
+  return matchingComponent;
+}
 
-      // TODO: What if type doesn't match?
-      const matchingType = schemaTypes[typeName] || {};
-      const matchingField = (matchingType.fields || []).find(
-        ({ name }) => name === fieldName
-      );
+function getOperationFields(matchingComponent, schemaTypes) {
+  if (matchingComponent.value.kind === "object") {
+    return matchingComponent.value.members.map(member => {
+      const value = member.value.value;
+      const valuesType = value.name;
+      let matchingField;
+
+      if (value.kind === "union") {
+        matchingField = valuesType;
+      } else {
+        // Field lookups
+        // TODO: Likely this is brittle and a more specific check is required
+        const parts = valuesType.split("['");
+        const typeName = parts[0];
+        const fieldName = parts[1].split("']")[0]; // TODO: Parse in a nicer way
+
+        // TODO: What if type doesn't match?
+        const matchingType = schemaTypes[typeName] || {};
+        matchingField = (matchingType.fields || []).find(
+          ({ name }) => name === fieldName
+        );
+      }
 
       return parseTypeFields(matchingField, member.key.name);
     });
   }
 
+  // TODO: What's the exact type? scalar?
   if (matchingComponent.value.value) {
     return matchingComponent.value.value.name.kind;
   }
+
+  if (matchingComponent.value.kind === "arrayType") {
+    const members = getOperationFields(
+      matchingComponent.value.type,
+      schemaTypes
+    );
+
+    return members;
+  }
+
+  console.warn("Not implemented yet for", matchingComponent);
 
   return [];
 }

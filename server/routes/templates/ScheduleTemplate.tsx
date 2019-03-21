@@ -1,17 +1,16 @@
 import styled from "@emotion/styled";
 import { Color } from "csstype";
 import hexToRgba from "hex-to-rgba";
-// import get from "lodash/get";
 import desaturate from "polished/lib/color/desaturate";
 import * as React from "react";
 import { Schedule as ISchedule } from "../../schema/Schedule";
 import { Theme } from "../../schema/Theme";
-import connect from "../components/connect";
+import connected from "../components/connected";
 import Schedule from "../components/Schedule";
 import Sponsors from "../components/Sponsors";
 // import { dayToFinnishLocale } from "../date-utils";
 // import scheduleQuery from "../queries/scheduleQuery";
-import sponsorQuery from "../queries/sponsorQuery";
+// import sponsorQuery from "../queries/sponsorQuery";
 interface SchedulePageContainerProps {
   id: string;
   primaryColor: Color;
@@ -82,14 +81,7 @@ const ScheduleFooterContainer = styled.section`
   margin-top: -0.5cm;
 `;
 
-// TODO: Use through `connected` -> needs sponsors(conferenceId) end point
-const ConnectedSponsors = connect(
-  "/graphql",
-  sponsorQuery,
-  ({ conferenceId }) => ({ conferenceId })
-)(({ sponsors }) => {
-  return <Sponsors sponsors={sponsors || []} />;
-});
+const ConnectedSponsors = connected(Sponsors);
 
 // conferenceId -> intervals
 // pass theme through
@@ -124,7 +116,7 @@ function ScheduleTemplate({
         <ConnectedSchedule theme={theme} intervals={[]} />
       </ScheduleContentContainer>
       <ScheduleFooterContainer>
-        {/* TODO: Same here, what's a smart way to connect? */}
+        {/* TODO: Figure out a better way to pass conferenceId (read from context?) */}
         <ConnectedSponsors conferenceId={conferenceId} />
       </ScheduleFooterContainer>
     </ScheduleTemplateContainer>

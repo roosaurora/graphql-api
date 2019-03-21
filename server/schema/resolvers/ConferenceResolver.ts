@@ -62,7 +62,7 @@ class ConferenceResolver {
   }
 
   @Query(_ => [Contact])
-  public sponsors(@Arg("id", _ => ID) id: string) {
+  public sponsors(@Arg("conferenceId", _ => ID) id: string) {
     return getConference(id).sponsors;
   }
 
