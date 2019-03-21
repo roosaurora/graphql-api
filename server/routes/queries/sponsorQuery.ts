@@ -1,26 +1,15 @@
 const sponsorQuery = `
 query PageQuery($conferenceId: ID!) {
-  conference(id: $conferenceId) {
-    goldSponsors {
-      ...SponsorFragment
+  sponsors(id: $conferenceId) {
+    type
+    name
+    social {
+      homepage
     }
-    silverSponsors {
-      ...SponsorFragment
+    about
+    image {
+      url
     }
-    bronzeSponsors {
-      ...SponsorFragment
-    }
-  }
-}
-
-fragment SponsorFragment on Contact {
-  name
-  social {
-    homepage
-  }
-  about
-  image {
-    url
   }
 }
 `;

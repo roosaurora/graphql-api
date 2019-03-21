@@ -1,5 +1,7 @@
 import styled from "@emotion/styled";
+import filter from "lodash/filter";
 import * as React from "react";
+import { ContactType } from "../../schema/Contact";
 import Contacts from "./Contacts";
 import { Sponsor, SponsorProps } from "./Sponsor";
 
@@ -25,40 +27,38 @@ const BronzeSponsors = styled.section`
 `;
 
 interface SponsorsProps {
-  sponsors: {
-    goldSponsors?: SponsorProps[];
-    silverSponsors?: SponsorProps[];
-    bronzeSponsors?: SponsorProps[];
-  };
+  sponsors: SponsorProps[];
 }
 
 // TODO: Check if the structure can be simplified
-const Sponsors = ({
-  sponsors: { goldSponsors = [], silverSponsors = [], bronzeSponsors = [] },
-}: SponsorsProps) => (
+const Sponsors = ({ sponsors }: SponsorsProps) => (
   <SponsorsContainer>
     <GoldSponsors>
       <Contacts
-        items={goldSponsors}
+        items={getSponsorsByType(sponsors, ContactType.GOLD_SPONSOR)}
         render={Sponsor}
         renderProps={{ type: "gold" }}
       />
     </GoldSponsors>
     <SilverSponsors>
       <Contacts
-        items={silverSponsors}
+        items={getSponsorsByType(sponsors, ContactType.SILVER_SPONSOR)}
         render={Sponsor}
         renderProps={{ type: "silver" }}
       />
     </SilverSponsors>
     <BronzeSponsors>
       <Contacts
-        items={bronzeSponsors}
+        items={getSponsorsByType(sponsors, ContactType.BRONZE_SPONSOR)}
         render={Sponsor}
         renderProps={{ type: "bronze" }}
       />
     </BronzeSponsors>
   </SponsorsContainer>
 );
+
+function getSponsorsByType(allSponsors, type: ContactType) {
+  return filter(allSponsors, sponsor => sponsor.type.includes(type));
+}
 
 export default Sponsors;

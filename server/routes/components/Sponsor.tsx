@@ -1,11 +1,10 @@
 import styled from "@emotion/styled";
 import React from "react";
-import { Contact } from "../../schema/Contact";
+import { Contact, ContactType } from "../../schema/Contact";
 
 interface SponsorContentProps {
   src: string;
   name: string;
-  props: {};
   type: string; // TODO: Better use an enum here
 }
 
@@ -42,12 +41,11 @@ interface SponsorProps {
   name: Contact["name"];
   about: Contact["about"];
   image: Contact["image"];
-  logoProps: {}; // TODO: Eliminate entirely?
-  type: string; // TODO: Better use the same enum here. Likely this goes away.
+  type: ContactType;
 }
 
-const Sponsor = ({ name, image, logoProps, type }: SponsorProps) => (
-  <SponsorContent src={image.url} name={name} props={logoProps} type={type} />
+const Sponsor = ({ name, image, type }: SponsorProps) => (
+  <SponsorContent src={image.url} name={name} type={type} />
 );
 
 export { Sponsor, SponsorProps };
