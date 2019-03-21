@@ -1,5 +1,6 @@
 import Keyword from "../../../server/schema/keywords";
-import { Session, SessionType } from "../../../server/schema/Session";
+import { Session } from "../../../server/schema/Session";
+import { SessionType } from "../../../server/schema/types";
 import speaker from "../../people/artem-zakharchenko";
 
 const talk: Session = {

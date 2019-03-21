@@ -1,5 +1,6 @@
-import { Session, SessionType } from "../../../server/schema/Session";
 import Keyword from "../../../server/schema/keywords";
+import { Session } from "../../../server/schema/Session";
+import { SessionType } from "../../../server/schema/types";
 import speaker from "../../people/adam-miskiewicz";
 
 const talk: Session = {

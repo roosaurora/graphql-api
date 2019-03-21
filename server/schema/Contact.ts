@@ -6,25 +6,10 @@ import { Image } from "./Image";
 import Keyword from "./keywords";
 import { Location } from "./Location";
 import { resolveSessions } from "./Schedule";
-import { Session, SessionType } from "./Session";
+import { Session } from "./Session";
 import { Social } from "./Social";
-
-export enum ContactType {
-  PRESS = "PRESS",
-  SPEAKER = "SPEAKER",
-  TALK = "TALK",
-  LIGHTNING_TALK = "LIGHTNING_TALK",
-  KEYNOTE = "KEYNOTE",
-  WORKSHOP = "WORKSHOP",
-  WORKSHOP_HOST = "WORKSHOP_HOST",
-  ORGANIZER = "ORGANIZER",
-  SPONSOR = "SPONSOR",
-  GOLD_SPONSOR = "GOLD_SPONSOR",
-  SILVER_SPONSOR = "SILVER_SPONSOR",
-  BRONZE_SPONSOR = "BRONZE_SPONSOR",
-  PARTNER = "PARTNER",
-  ATTENDEE = "ATTENDEE",
-}
+import ContactType from "./types/ContactType";
+import SessionType from "./types/SessionType";
 
 @ObjectType()
 export class Contact {

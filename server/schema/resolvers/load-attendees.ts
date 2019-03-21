@@ -6,7 +6,8 @@ import mapValues from "lodash/mapValues";
 import trimStart from "lodash/trimStart";
 import upperFirst from "lodash/upperFirst";
 import { Conference } from "../Conference";
-import { Contact, ContactType } from "../Contact";
+import { Contact } from "../Contact";
+import { ContactType } from "../types";
 
 async function loadAttendees(conference: Conference, csvPath: string) {
   if (fs.existsSync(csvPath)) {

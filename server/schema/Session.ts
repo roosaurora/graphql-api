@@ -2,7 +2,7 @@ import { Field, ObjectType } from "type-graphql";
 import { Contact } from "./Contact";
 import Keyword from "./keywords";
 import { Location } from "./Location";
-import SessionType from "./SessionType";
+import SessionType from "./types/SessionType";
 
 @ObjectType()
 export class SessionUrls {
@@ -43,6 +43,3 @@ export class Session {
   @Field(_ => SessionUrls, { nullable: true })
   public urls?: SessionUrls;
 }
-
-// Backwards-compatibility with content. TODO: refactor out
-export { SessionType };

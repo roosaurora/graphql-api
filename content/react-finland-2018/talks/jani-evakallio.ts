@@ -1,4 +1,5 @@
-import { Session, SessionType } from "../../../server/schema/Session";
+import { Session } from "../../../server/schema/Session";
+import { SessionType } from "../../../server/schema/types";
 import speaker from "../../people/jani-evakallio";
 
 const talk: Session = {

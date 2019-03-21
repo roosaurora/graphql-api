@@ -1,4 +1,5 @@
-import { Session, SessionType } from "../../../server/schema/Session";
+import { Session } from "../../../server/schema/Session";
+import { SessionType } from "../../../server/schema/types";
 import Keyword from "../../../server/schema/keywords";
 import { paasitorni } from "../../locations";
 import marc from "../../people/marc-andre-giroux";

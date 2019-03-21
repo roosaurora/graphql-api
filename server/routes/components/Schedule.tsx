@@ -5,8 +5,8 @@ import * as React from "react";
 import emoji from "react-easy-emoji";
 import { Interval } from "../../schema/Interval";
 import { Session } from "../../schema/Session";
-import SessionType from "../../schema/SessionType";
 import { Theme } from "../../schema/Theme";
+import { SessionType } from "../../schema/types";
 
 // TODO: Move control for margin/height to consumer
 const ScheduleContainer = styled.dl`
@@ -68,7 +68,8 @@ interface ScheduleProps {
     sessions: Array<{
       title: Session["title"];
       type: Session["type"];
-      people: Session["people"];
+      // TODO: How to resolve names of the people?
+      //people: Session["people"];
     }>;
   }>;
 }
@@ -90,8 +91,8 @@ function Schedule({ theme, intervals }: ScheduleProps) {
             {begin}-{end}
           </ScheduleTitle>
           <ScheduleDefinition key={`dd-${i}`}>
-            {sessions.map(({ title, type, people }, i) => (
-              <SessionTitle key={i} title={title} type={type} people={people} />
+            {sessions.map(({ title, type }, i) => (
+              <SessionTitle key={i} title={title} type={type} name={"demo"} />
             ))}
           </ScheduleDefinition>
         </ScheduleContainerItem>
@@ -104,11 +105,10 @@ const SessionTitleContainer = styled.h3`
   margin-bottom: 0.15cm;
 `;
 
-function SessionTitle({ title, type, people }) {
+function SessionTitle({ title, type, name }) {
   return (
     <SessionTitleContainer>
-      {title} {people && Array.isArray(people) && `- ${people[0].name}`}{" "}
-      <ScheduleIcon type={type} />
+      {title} {name && `- ${name}`} <ScheduleIcon type={type} />
     </SessionTitleContainer>
   );
 }

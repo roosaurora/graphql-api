@@ -1,7 +1,7 @@
 import { buildSchema, registerEnumType } from "type-graphql";
-import { ContactType } from "./Contact";
 import * as resolvers from "./resolvers";
-import { SessionType } from "./Session";
+import ContactType from "./types/ContactType";
+import SessionType from "./types/SessionType";
 
 registerEnumType(ContactType, {
   name: "ContactType",

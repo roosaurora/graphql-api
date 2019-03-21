@@ -4,7 +4,8 @@ import hexToRgba from "hex-to-rgba";
 import get from "lodash/get";
 import trimStart from "lodash/trimStart";
 import * as React from "react";
-import { Contact, ContactType } from "../../schema/Contact";
+import { Contact } from "../../schema/Contact";
+import { ContactType } from "../../schema/types";
 import Card from "../components/Card";
 
 interface BadgeContainerProps {

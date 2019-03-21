@@ -1,4 +1,5 @@
-import { Session, SessionType } from "../../../server/schema/Session";
+import { Session } from "../../../server/schema/Session";
+import { SessionType } from "../../../server/schema/types";
 import { elisaAppelsiini } from "../../locations";
 import nik from "../../people/nik-graf";
 import patrick from "../../people/patrick-stapfer";

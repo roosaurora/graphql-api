@@ -8,13 +8,13 @@ import {
   Root,
 } from "type-graphql";
 import { getConference } from "../Conference";
-import { Contact, ContactType, getSessionSpeakers } from "../Contact";
+import { Contact, getSessionSpeakers } from "../Contact";
 import { IContext } from "../Context";
 import { Country } from "../Country";
 import { Image } from "../Image";
 import { resolveSessions } from "../Schedule";
-import SessionType from "../SessionType";
 import { Social } from "../Social";
+import { ContactType, SessionType } from "../types";
 
 @Resolver(_ => Contact)
 class ContactResolver {

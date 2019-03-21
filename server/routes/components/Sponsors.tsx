@@ -1,7 +1,7 @@
 import styled from "@emotion/styled";
 import filter from "lodash/filter";
 import * as React from "react";
-import { ContactType } from "../../schema/Contact";
+import { ContactType } from "../../schema/types";
 import Contacts from "./Contacts";
 import { Sponsor, SponsorProps } from "./Sponsor";
 

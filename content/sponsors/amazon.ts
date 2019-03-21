@@ -1,4 +1,5 @@
-import { Contact, ContactType } from "../../server/schema/Contact";
+import { Contact } from "../../server/schema/Contact";
+import { ContactType } from "../../server/schema/types";
 
 const sponsor: Contact = {
   name: "Amazon Web Services",

@@ -7,8 +7,9 @@ import * as React from "react";
 import CopyToClipboard from "react-copy-to-clipboard";
 import titleCase from "to-title-case";
 import { Conference } from "../../schema/Conference";
-import { Contact, ContactType } from "../../schema/Contact";
+import { Contact } from "../../schema/Contact";
 import { Theme } from "../../schema/Theme";
+import { ContactType } from "../../schema/types";
 import connect from "../components/connect";
 import { dayToFinnishLocale } from "../date-utils";
 

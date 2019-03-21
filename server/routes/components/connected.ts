@@ -1,5 +1,6 @@
 import { request } from "graphql-request";
 import filter from "lodash/filter";
+import flatMap from "lodash/flatMap";
 import get from "lodash/get";
 import isEqual from "lodash/isEqual";
 import isObject from "lodash/isObject";
@@ -113,8 +114,6 @@ function getOperationVariables(query, props) {
     const arg = args.find(arg => arg.name === name);
 
     if (!arg) {
-      console.error(`${name} wasn't found in`, query);
-
       return {};
     }
 
@@ -141,38 +140,21 @@ function getMatchingComponent(componentAST, queryName) {
 }
 
 function getOperationFields(matchingComponent, schemaTypes) {
-  if (matchingComponent.value.kind === "object") {
-    return matchingComponent.value.members.map(member => {
-      const value = member.value.value;
-      const valuesType = value.name;
-      let matchingField;
+  console.log("ZZZ", matchingComponent);
 
-      if (value.kind === "union") {
-        matchingField = valuesType;
-      } else {
-        // Field lookups
-        // TODO: Likely this is brittle and a more specific check is required
-        const parts = valuesType.split("['");
-        const typeName = parts[0];
-        const fieldName = parts[1].split("']")[0]; // TODO: Parse in a nicer way
+  if (get(matchingComponent, "value.kind") === "object") {
+    return matchingComponent.value.members.map(parseField);
+  } else if (get(matchingComponent, "value.kind") === "generic") {
+    const params = matchingComponent.value.typeParams.params;
 
-        // TODO: What if type doesn't match?
-        const matchingType = schemaTypes[typeName] || {};
-        matchingField = (matchingType.fields || []).find(
-          ({ name }) => name === fieldName
-        );
-      }
-
-      return parseTypeFields(matchingField, member.key.name);
+    return flatMap(params, param => {
+      return map(param.members, member => {
+        return getOperationFields(member.value, schemaTypes);
+      });
     });
-  }
-
-  // TODO: What's the exact type? scalar?
-  if (matchingComponent.value.value) {
+  } else if (get(matchingComponent, "value.value") === "scalar") {
     return matchingComponent.value.value.name.kind;
-  }
-
-  if (matchingComponent.value.kind === "arrayType") {
+  } else if (get(matchingComponent, "value.kind") === "arrayType") {
     const members = getOperationFields(
       matchingComponent.value.type,
       schemaTypes
@@ -181,9 +163,67 @@ function getOperationFields(matchingComponent, schemaTypes) {
     return members;
   }
 
-  console.warn("Not implemented yet for", matchingComponent);
+  console.log("bar", matchingComponent);
 
-  return [];
+  return parseField(matchingComponent);
+}
+
+function parseField(member) {
+  const value = get(member, "value.value", member);
+
+  const valuesType = value.name;
+  let matchingField;
+
+  if (value.kind === "import") {
+    const typeName = value.moduleSpecifier.split("./")[1];
+
+    matchingField = schemaTypes[typeName];
+  } else if (value.kind === "union") {
+    matchingField = valuesType;
+  } else if (value.kind === "id") {
+    console.log("got id", member);
+
+    return ""; // TODO
+  } else if (value.kind === "class") {
+    const typeName = parseTypeName(valuesType);
+    const fieldName = parseFieldName(valuesType);
+
+    // TODO: What if type doesn't match?
+    const matchingType = schemaTypes[typeName] || {};
+    matchingField = (matchingType.fields || []).find(
+      ({ name }) => name === fieldName
+    );
+
+    return parseTypeFields(matchingField, fieldName);
+  } else if (value.kind === "generic") {
+    console.log("foo", value, member);
+
+    if (value.typeParams) {
+      return {
+        // TODO: This needs a fix at the parser. It's missing
+        // the array field name.
+        sessions: flatMap(value.typeParams.params, ({ members }) => {
+          return map(members, member => {
+            return parseFieldName(member.value.value.name);
+          });
+        }),
+      };
+    }
+
+    return parseFieldName(value.value.name);
+  }
+
+  console.log("no match member", member);
+
+  return parseTypeFields(matchingField, member.key.name);
+}
+
+function parseTypeName(name) {
+  return name.split("['")[0];
+}
+
+function parseFieldName(name) {
+  return name.split("['")[1].split("']")[0]; // TODO: Parse in a nicer way;
 }
 
 function parseTypeFields(matchingField, memberName, i = 0) {

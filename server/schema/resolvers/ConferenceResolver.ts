@@ -15,7 +15,8 @@ import { Contact, getSessionSpeakers } from "../Contact";
 import { IContext } from "../Context";
 import { resolveSessions } from "../Schedule";
 import { Series } from "../Series";
-import { Session, SessionType } from "../Session";
+import { Session } from "../Session";
+import { SessionType } from "../types";
 import series from "./conferenceSeries";
 import loadAttendees from "./load-attendees";
 

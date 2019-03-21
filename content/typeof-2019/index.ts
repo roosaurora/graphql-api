@@ -1,6 +1,5 @@
 import { Conference } from "../../server/schema/Conference";
-import { ContactType } from "../../server/schema/Contact";
-import { SessionType } from "../../server/schema/Session";
+import { ContactType, SessionType } from "../../server/schema/types";
 import * as people from "../people";
 import * as allSponsors from "../sponsors";
 import scheduleData from "./data.json";

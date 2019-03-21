@@ -1,6 +1,7 @@
 import styled from "@emotion/styled";
 import React from "react";
-import { Contact, ContactType } from "../../schema/Contact";
+import { Contact } from "../../schema/Contact";
+import { ContactType } from "../../schema/types";
 
 interface SponsorContentProps {
   src: Contact["image"]["url"];

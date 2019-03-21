@@ -1,5 +1,6 @@
 import Keyword from "../../../server/schema/keywords";
-import { Session, SessionType } from "../../../server/schema/Session";
+import { Session } from "../../../server/schema/Session";
+import { SessionType } from "../../../server/schema/types";
 import { valkoinenSali } from "../../locations";
 import andrey from "../../people/andrey-okonetchnikov";
 import artem from "../../people/artem-sapegin";

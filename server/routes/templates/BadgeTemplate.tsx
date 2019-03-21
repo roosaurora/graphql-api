@@ -5,8 +5,9 @@ import flatten from "lodash/flatten";
 import get from "lodash/get";
 import map from "lodash/map";
 import * as React from "react";
-import { Contact, ContactType } from "../../schema/Contact";
+import { Contact } from "../../schema/Contact";
 import { Theme } from "../../schema/Theme";
+import { ContactType } from "../../schema/types";
 import Badge from "../components/Badge";
 import connect from "../components/connect";
 

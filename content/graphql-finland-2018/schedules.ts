@@ -1,5 +1,5 @@
 import { Schedule } from "../../server/schema/Schedule";
-import { SessionType } from "../../server/schema/Session";
+import { SessionType } from "../../server/schema/types";
 import * as talks from "./talks";
 import * as allWorkshops from "./workshops";
 

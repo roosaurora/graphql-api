@@ -1,5 +1,5 @@
 import { Conference } from "../../server/schema/Conference";
-import { SessionType } from "../../server/schema/Session";
+import { SessionType } from "../../server/schema/types";
 import * as locations from "../locations";
 import * as people from "../people";
 import * as allSponsors from "../sponsors";

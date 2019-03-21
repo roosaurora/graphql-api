@@ -1,5 +1,6 @@
-import { Contact, ContactType } from "../../server/schema/Contact";
+import { Contact } from "../../server/schema/Contact";
 import Keyword from "../../server/schema/keywords";
+import { ContactType } from "../../server/schema/types";
 
 const person: Contact = {
   name: "Farzad Yz",
