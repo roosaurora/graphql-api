@@ -3,9 +3,9 @@ import React from "react";
 import { Contact, ContactType } from "../../schema/Contact";
 
 interface SponsorContentProps {
-  src: string;
-  name: string;
-  type: string; // TODO: Better use an enum here
+  src: Contact["image"]["url"];
+  name: Contact["name"];
+  type: ContactType;
 }
 
 const sponsorRules = {
