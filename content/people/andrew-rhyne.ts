@@ -1,6 +1,6 @@
 import { Contact } from "../../server/schema/Contact";
-import { ContactType } from "../../server/schema/types";
 import Keyword from "../../server/schema/keywords";
+import { ContactType } from "../../server/schema/types";
 
 const person: Contact = {
   name: "Andrew Rhyne",
