@@ -1,8 +1,7 @@
 import styled from "@emotion/styled";
 import * as React from "react";
-import { Contact } from "../../schema/Contact";
 import Contacts from "./Contacts";
-import Sponsor from "./Sponsor";
+import { Sponsor, SponsorProps } from "./Sponsor";
 
 const SponsorsContainer = styled.div`
   display: grid;
@@ -26,16 +25,16 @@ const BronzeSponsors = styled.section`
 `;
 
 interface SponsorsProps {
-  goldSponsors?: Contact[];
-  silverSponsors?: Contact[];
-  bronzeSponsors?: Contact[];
+  sponsors: {
+    goldSponsors?: SponsorProps[];
+    silverSponsors?: SponsorProps[];
+    bronzeSponsors?: SponsorProps[];
+  };
 }
 
 // TODO: Check if the structure can be simplified
 const Sponsors = ({
-  goldSponsors = [],
-  silverSponsors = [],
-  bronzeSponsors = [],
+  sponsors: { goldSponsors = [], silverSponsors = [], bronzeSponsors = [] },
 }: SponsorsProps) => (
   <SponsorsContainer>
     <GoldSponsors>

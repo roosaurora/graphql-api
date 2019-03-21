@@ -1,6 +1,6 @@
 import styled from "@emotion/styled";
 import React from "react";
-import { Image } from "../../schema/Image";
+import { Contact } from "../../schema/Contact";
 
 interface SponsorContentProps {
   src: string;
@@ -39,16 +39,15 @@ const SponsorContent = styled.img`
 ` as React.FC<SponsorContentProps>;
 
 interface SponsorProps {
-  name: string;
-  about: string;
-  social: {};
-  image: Image;
-  logoProps: {};
-  type: string; // TODO: Better use the same enum here
+  name: Contact["name"];
+  about: Contact["about"];
+  image: Contact["image"];
+  logoProps: {}; // TODO: Eliminate entirely?
+  type: string; // TODO: Better use the same enum here. Likely this goes away.
 }
 
 const Sponsor = ({ name, image, logoProps, type }: SponsorProps) => (
   <SponsorContent src={image.url} name={name} props={logoProps} type={type} />
 );
 
-export default Sponsor;
+export { Sponsor, SponsorProps };
