@@ -61,6 +61,11 @@ class ConferenceResolver {
     return getSessionSpeakers(conference, talks);
   }
 
+  @Query(_ => [Contact])
+  public sponsors(@Arg("id", _ => ID) id: string) {
+    return getConference(id).sponsors;
+  }
+
   @FieldResolver(_ => [Contact])
   public async attendees(@Root() conference: Conference, @Ctx() ctx: IContext) {
     const speakers = getSessionSpeakers(
