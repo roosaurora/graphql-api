@@ -4,6 +4,7 @@ import map from "lodash/map";
 import * as React from "react";
 import emoji from "react-easy-emoji";
 import { Interval } from "../../schema/Interval";
+import { Session } from "../../schema/Session";
 import SessionType from "../../schema/SessionType";
 import { Theme } from "../../schema/Theme";
 
@@ -61,7 +62,15 @@ const ScheduleDefinition = styled.dd`
 
 interface ScheduleProps {
   theme: Theme;
-  intervals: Interval[];
+  intervals: Array<{
+    begin: Interval["begin"];
+    end: Interval["end"];
+    sessions: Array<{
+      title: Session["title"];
+      type: Session["type"];
+      people: Session["people"];
+    }>;
+  }>;
 }
 
 function Schedule({ theme, intervals }: ScheduleProps) {

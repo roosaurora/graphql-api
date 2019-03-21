@@ -1,4 +1,4 @@
-import { Field, FieldResolver, ObjectType, Resolver, Root } from "type-graphql";
+import { Field, ObjectType } from "type-graphql";
 import { Contact } from "./Contact";
 import Keyword from "./keywords";
 import { Location } from "./Location";
@@ -42,14 +42,6 @@ export class Session {
 
   @Field(_ => SessionUrls, { nullable: true })
   public urls?: SessionUrls;
-}
-
-@Resolver(_ => Session)
-export class SessionResolver {
-  @FieldResolver(_ => [Contact], { deprecationReason: "Use `people` instead" })
-  public speakers(@Root() session: Session) {
-    return session.people || [];
-  }
 }
 
 // Backwards-compatibility with content. TODO: refactor out
