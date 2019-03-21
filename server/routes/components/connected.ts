@@ -82,10 +82,7 @@ function connected(component) {
       // TODO: Figure out how to deal with the theme + figure out the exact shape for the query
       const operations = map(matchingQueries, query => ({
         operation: query.name,
-        variables: getOperationVariables(
-          query,
-          omit(this.props, ["id", "theme"])
-        ), // TODO: remove the omit hack
+        variables: getOperationVariables(query, omit(this.props, ["id"])), // TODO: remove the omit hack - id should be a ref
         fields: getOperationFields(
           componentPropTypeAST,
           query.name,
