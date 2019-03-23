@@ -79,19 +79,18 @@ function connected(component) {
       // object values have value.value.name (if value.kind is generic) that gives string (TS class + field)
       // that field can then be used for figuring out the fields
       // TODO: Figure out how to deal with the theme + figure out the exact shape for the query
-      const operations = map(matchingQueries, query => ({
-        operation: query.name,
-        variables: getOperationVariables(query, omit(this.props, ["id"])), // TODO: remove the omit hack - id should be a ref
-        fields: getOperationFields(
-          getMatchingComponent(componentPropTypeAST, query.name),
-          schemaTypes
-        ),
-      }));
+      const operations = map(matchingQueries, query => {
+        return {
+          operation: query.name,
+          variables: getOperationVariables(query, omit(this.props, ["id"])), // TODO: remove the omit hack - id should be a ref
+          fields: getOperationFields(
+            getMatchingComponent(componentPropTypeAST, query.name),
+            schemaTypes
+          ),
+        };
+      });
 
       const gqlQuery = gql.query(operations);
-
-      console.log(gqlQuery.query);
-
       return request(endpoint, gqlQuery.query, gqlQuery.variables)
         .then(data => {
           queryCache = data;
@@ -139,21 +138,26 @@ function getMatchingComponent(componentAST, queryName) {
   return matchingComponent;
 }
 
-function getOperationFields(matchingComponent, schemaTypes) {
-  console.log("ZZZ", matchingComponent);
-
+function getOperationFields(matchingComponent, schemaTypes, parentName = "") {
   if (get(matchingComponent, "value.kind") === "object") {
     return matchingComponent.value.members.map(parseField);
   } else if (get(matchingComponent, "value.kind") === "generic") {
-    const params = matchingComponent.value.typeParams.params;
-
-    return flatMap(params, param => {
-      return map(param.members, member => {
-        return getOperationFields(member.value, schemaTypes);
+    if (matchingComponent.value.typeParams) {
+      const params = matchingComponent.value.typeParams.params;
+      const ret = flatMap(params, param => {
+        return map(param.members, member => {
+          return getOperationFields(member, schemaTypes, member.key.name);
+        });
       });
-    });
-  } else if (get(matchingComponent, "value.value") === "scalar") {
-    return matchingComponent.value.value.name.kind;
+
+      if (parentName) {
+        return { [parentName]: ret };
+      }
+
+      return ret;
+    }
+
+    return parseField(matchingComponent);
   } else if (get(matchingComponent, "value.kind") === "arrayType") {
     const members = getOperationFields(
       matchingComponent.value.type,
@@ -161,9 +165,13 @@ function getOperationFields(matchingComponent, schemaTypes) {
     );
 
     return members;
+  } else if (get(matchingComponent, "value.kind") === "class") {
+    return parseField(matchingComponent);
+  } else if (get(matchingComponent, "value.kind") === "id") {
+    return parseField(matchingComponent);
   }
 
-  console.log("bar", matchingComponent);
+  console.warn("No matching type", matchingComponent);
 
   return parseField(matchingComponent);
 }
@@ -181,8 +189,6 @@ function parseField(member) {
   } else if (value.kind === "union") {
     matchingField = valuesType;
   } else if (value.kind === "id") {
-    console.log("got id", member);
-
     return ""; // TODO
   } else if (value.kind === "class") {
     const typeName = parseTypeName(valuesType);
@@ -196,13 +202,17 @@ function parseField(member) {
 
     return parseTypeFields(matchingField, fieldName);
   } else if (value.kind === "generic") {
-    console.log("foo", value, member);
-
     if (value.typeParams) {
+      const parentName = "intervals";
+
+      if (!parentName) {
+        console.error("Failed to find parent for", member);
+
+        return;
+      }
+
       return {
-        // TODO: This needs a fix at the parser. It's missing
-        // the array field name.
-        sessions: flatMap(value.typeParams.params, ({ members }) => {
+        [parentName]: flatMap(value.typeParams.params, ({ members }) => {
           return map(members, member => {
             return parseFieldName(member.value.value.name);
           });
@@ -213,7 +223,7 @@ function parseField(member) {
     return parseFieldName(value.value.name);
   }
 
-  console.log("no match member", member);
+  console.warn("No matching member", member);
 
   return parseTypeFields(matchingField, member.key.name);
 }

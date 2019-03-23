@@ -1,6 +1,8 @@
+import isObject from "lodash/isObject";
 import isString from "lodash/isString";
+import map from "lodash/map";
 
-type Fields = Array<string | object>;
+type Fields = object | string;
 
 interface IQueryBuilderOptions {
   operation: string /* Operation name */;
@@ -137,17 +139,15 @@ function queryFieldsMap(fields?: Fields): string {
     return fields;
   }
 
-  return fields
-    ? fields
-        .map(field =>
-          typeof field === "object"
-            ? `${Object.keys(field)[0]} { ${queryFieldsMap(
-                Object.values(field)[0]
-              )} }`
-            : `${field}`
-        )
-        .join(", ")
-    : "";
+  return map(fields, value => {
+    if (isObject(value)) {
+      return `${Object.keys(value)[0]} { ${queryFieldsMap(
+        Object.values(value)[0]
+      )} }`;
+    }
+
+    return value;
+  }).join(", ");
 }
 
 // Variables map. eg: { "id": 1, "name": "Jon Doe" }
