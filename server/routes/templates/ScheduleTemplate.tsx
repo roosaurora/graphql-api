@@ -85,13 +85,11 @@ const ConnectedSponsors = connected(Sponsors);
 // pass theme through
 const ConnectedSchedule = connected(Schedule);
 
-// TODO: 1. Refactor to ConnectedSchedule and remove intervals from direct data deps
-// TODO: 2. Use connected for Schedule as well
 function ScheduleTemplate({
-  theme,
-  conferenceId = "",
-  id,
-  day,
+  theme, // TODO: This should get queried (also needs to generate UI controls somehow)
+  conferenceId = "", // TODO: This should go to a context above -> connectors consume it
+  id, // TODO: This should become a ref instead
+  day, // TODO: This should go to a context above this -> connectors consume it
 }: ScheduleTemplateProps) {
   return (
     <ScheduleTemplateContainer

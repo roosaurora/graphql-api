@@ -75,6 +75,12 @@ function connected(component) {
         query => propNames.find(name => query.name === name && name !== "theme") // TODO: Remove theme hack
       ) as typeof queries;
 
+      if (matchingQueries.length < 1) {
+        console.warn("No matching queries for", propNames);
+
+        return Promise.resolve();
+      }
+
       // TODO: Figure out how to deal with variable types (introspect from schema)
       // object values have value.value.name (if value.kind is generic) that gives string (TS class + field)
       // that field can then be used for figuring out the fields
@@ -91,6 +97,9 @@ function connected(component) {
       });
 
       const gqlQuery = gql.query(operations);
+
+      console.log(this.props, matchingQueries, operations, { gqlQuery });
+
       return request(endpoint, gqlQuery.query, gqlQuery.variables)
         .then(data => {
           queryCache = data;
