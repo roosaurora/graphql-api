@@ -33,7 +33,7 @@ const conference: Conference = {
 
 // TODO: Attach images from the site (needs improved data fetcher)
 function resolveSchedules({ schedules, speakers }) {
-  return schedules.map(schedule => {
+  return (schedules || []).map(schedule => {
     return {
       ...schedule,
       intervals: schedule.intervals.map(interval => {

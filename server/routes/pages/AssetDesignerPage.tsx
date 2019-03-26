@@ -442,7 +442,7 @@ const SelectorContainer = styled.div`
 
 // TODO: Make this a lot nicer
 function GraphQLVariableSelector({ prop, selected, onChange }) {
-  if (prop.type === "string" || prop.type === "id") {
+  if (prop.type === "string" || prop.type === "id" || prop.type === "generic") {
     return (
       <SelectorContainer>
         <SelectorLabel>{prop.field}</SelectorLabel>

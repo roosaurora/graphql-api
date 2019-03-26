@@ -37,7 +37,7 @@ const conference: Conference = {
 };
 
 function resolveSchedules({ schedules, speakers }) {
-  return schedules.map(schedule => {
+  return (schedules || []).map(schedule => {
     return {
       ...schedule,
       intervals: schedule.intervals.map(interval => {
