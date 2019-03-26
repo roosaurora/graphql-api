@@ -69,7 +69,7 @@ interface ScheduleProps {
       title: Session["title"];
       type: Session["type"];
       // TODO: How to resolve names of the people?
-      //people: Session["people"];
+      // people: Session["people"];
     }>;
   }>;
 }
